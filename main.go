@@ -12,6 +12,7 @@ import (
 func main() {
 	//connect database
 	config.InitFirebase()
+	config.InitOAuth()
 
 	//start router
 	router := routes.UserHandleRoutes()

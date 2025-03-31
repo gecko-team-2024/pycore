@@ -48,6 +48,7 @@ func RegisterWithEmailAndPassword(email, password, username string) (string, err
 		CreatedAt: time.Now(),
 		PCoin:     0,
 		Role:      "user",
+		Method:    "email/password",
 	}
 
 	_, err = users.Doc(userID).Set(ctx, newUser)

@@ -36,3 +36,6 @@ go get github.com/joho/godotenv
 ```
     go run main.go
 ```
+
+# Test login with Google
+http://localhost:8080/auth/google

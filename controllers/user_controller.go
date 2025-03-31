@@ -10,6 +10,7 @@ import (
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.User
+
 	json.NewDecoder(r.Body).Decode(&user)
 	newUser, err := services.RegisterWithEmailAndPassword(
 		user.Email,
