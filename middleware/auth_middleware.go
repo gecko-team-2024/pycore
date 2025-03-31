@@ -14,9 +14,11 @@ var secret_key []byte
 
 func init() {
 	// Load file .env
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("WARNING: Error loading .env file. Proceeding without it.")
+	if os.Getenv("ENV") != "production" {
+		err := godotenv.Load()
+		if err != nil {
+			fmt.Println("WARNING: Error loading .env file. Proceeding without it.")
+		}
 	}
 
 	// Lấy giá trị SECRET_KEY từ biến môi trường

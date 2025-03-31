@@ -3,7 +3,7 @@ golang-server/
 │── main.go                 # Điểm khởi chạy chính
 │── go.mod                  # File quản lý module
 │── go.sum                  # File chứa checksum dependencies
-│
+│── serviceAccountKey.json
 ├── config/
 │   ├── firebase.go         # Cấu hình kết nối Firestore
 │   ├── env.go              # Load biến môi trường
@@ -31,3 +31,8 @@ go get github.com/gin-gonic/gin
 go get firebase.google.com/go
 go get google.golang.org/api/option
 go get github.com/joho/godotenv
+
+# Chay bang lenh
+```
+    go run main.go
+```

@@ -14,9 +14,11 @@ import (
 var Client *firestore.Client
 
 func InitFirebase() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v\n", err)
+	if os.Getenv("ENV") != "production" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("Error loading .env file: %v\n", err)
+		}
 	}
 
 	ctx := context.Background()
