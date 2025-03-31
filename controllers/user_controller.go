@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"pycore/middleware"
 	"pycore/models"
 	"pycore/services"
 )
@@ -21,8 +22,18 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//create jwt
+	token, err := middleware.CreateToken(user.UserName)
+	if err != nil {
+		http.Error(w, "False to generate token", http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newUser)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user":  newUser,
+		"token": token,
+	})
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +46,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := middleware.CreateToken(req.UserName)
+	if err != nil {
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"userID": userID, "message": "Login successfully"})
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"userID":  userID,
+		"message": "Login successfully",
+		"token":   token,
+	})
 }

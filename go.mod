@@ -11,6 +11,8 @@ require (
 	google.golang.org/api v0.228.0
 )
 
+require github.com/golang-jwt/jwt/v5 v5.2.2
+
 require (
 	cel.dev/expr v0.19.2 // indirect
 	cloud.google.com/go v0.118.3 // indirect
