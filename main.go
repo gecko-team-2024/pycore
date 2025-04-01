@@ -10,18 +10,27 @@ import (
 )
 
 func main() {
-	//connect database
+	// Kết nối database
 	config.InitFirebase()
 	config.InitOAuth()
 
-	//start router
+	// Khởi tạo router
 	router := routes.UserHandleRoutes()
 
-	//start server
+	// Cấu hình CORS
+	corsHandler := config.SetupCORS(router)
+	fmt.Println("CORS is running")
+
+	// Khởi chạy server
+	ip := os.Getenv("SERVER_IP")
+	if ip == "" {
+		ip = "localhost"
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	fmt.Println("Server is running on port " + port)
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	fmt.Println("Server is running on http://" + ip + ":" + port)
+	log.Fatal(http.ListenAndServe(":"+port, corsHandler))
 }
