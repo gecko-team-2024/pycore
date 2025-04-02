@@ -6,22 +6,29 @@ import (
 	"net/http"
 	"os"
 	"pycore/config"
+	"pycore/middleware"
 	"pycore/routes"
 )
 
 func main() {
-	// Kết nối database
+	middleware.LogEvent("Server is starting...")
+	fmt.Println("Logger started")
+
+	// connect database
 	config.InitFirebase()
 	config.InitOAuth()
 
-	// Khởi tạo router
+	// create router
 	router := routes.UserHandleRoutes()
 
-	// Cấu hình CORS
-	corsHandler := config.SetupCORS(router)
+	// middleware logger
+	loggerRouter := middleware.LoggingMiddleware(router)
+
+	// config CORS
+	corsHandler := config.SetupCORS(loggerRouter)
 	fmt.Println("CORS is running")
 
-	// Khởi chạy server
+	// run server
 	ip := os.Getenv("SERVER_IP")
 	if ip == "" {
 		ip = "localhost"
