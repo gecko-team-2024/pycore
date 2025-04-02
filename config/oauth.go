@@ -12,9 +12,11 @@ import (
 var GoogleOAuthConfig *oauth2.Config
 
 func LoadEnv() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("No ENV file found")
+	if os.Getenv("ENV") != "production" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Println("No ENV file found")
+		}
 	}
 }
 
