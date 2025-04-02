@@ -21,11 +21,18 @@ func LoadEnv() {
 }
 
 func InitOAuth() {
+	redirectURL := "http://localhost:8080/auth/google/callback" // Mặc định cho môi trường phát triển
+	if os.Getenv("ENV") == "production" {
+		redirectURL = "https://pycore.onrender.com/auth/google/callback" // URL cho môi trường production
+	}
+
 	GoogleOAuthConfig = &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-		RedirectURL:  "http://26.146.6.25:8080/auth/google/callback",
+		RedirectURL:  redirectURL,
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint:     google.Endpoint,
 	}
 }
+
+//https://pycore.onrender.com/auth/google/callback

@@ -39,4 +39,4 @@ go get github.com/joho/godotenv
 
 # Test login with Google
 http://localhost:8080/auth/google
-http://myapiwebo.id.vn/auth/google
+https://pycore.onrender.com/auth/google
