@@ -32,8 +32,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"user":  newUser,
-		"token": token,
+		"userID": newUser,
+		"token":  token,
 	})
 }
 

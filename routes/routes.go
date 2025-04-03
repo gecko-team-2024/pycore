@@ -14,6 +14,7 @@ func UserHandleRoutes() *mux.Router {
 	router.HandleFunc("/api/v1/user", controllers.GetUserByIDHandler).Methods("GET")
 	router.HandleFunc("/auth/google", controllers.GoogleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/google/callback", controllers.GoogleCallbackHandler).Methods("GET")
+	router.HandleFunc("/api/v1/download", controllers.DownloadFolderHandler).Methods("GET")
 
 	return router
 }
