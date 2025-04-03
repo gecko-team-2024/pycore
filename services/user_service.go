@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"pycore/config"
 	"pycore/models"
 	"time"
@@ -49,6 +50,7 @@ func RegisterWithEmailAndPassword(email, password, username string) (string, err
 		PCoin:     0,
 		Role:      "user",
 		Method:    "email/password",
+		PhotoURL:  fmt.Sprintf("https://ui-avatars.com/api/?name=%s&background=random&color=fff", username),
 	}
 
 	_, err = users.Doc(userID).Set(ctx, newUser)
