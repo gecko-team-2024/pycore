@@ -33,10 +33,7 @@ func InitOAuth() {
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.profile",
 			"https://www.googleapis.com/auth/userinfo.email",
-			"https://www.googleapis.com/auth/drive.readonly",
 		},
 		Endpoint: google.Endpoint,
 	}
 }
-
-//https://pycore.onrender.com/auth/google/callback

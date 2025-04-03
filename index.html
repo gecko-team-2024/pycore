@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test File Download</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test File Download</h1>
+    <p>Click the button below to download the file <strong>pỳarm.zip</strong>.</p>
+    <button id="downloadButton">Download</button>
+
+    <script>
+        document.getElementById("downloadButton").addEventListener("click", function () {
+            // URL của API tải file
+            const downloadUrl = "http://localhost:8081/api/v1/download";
+
+            // Tạo một thẻ <a> để tải file
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+            a.download = ""; // Tên file sẽ được lấy từ header Content-Disposition
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+    </script>
+</body>
+</html>
