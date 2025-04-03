@@ -42,7 +42,7 @@ func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(user) //response user
 }
 
 func fetchGoogleUser(accessToken string) (*models.OAuth, error) {

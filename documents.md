@@ -38,5 +38,11 @@ go get github.com/joho/godotenv
 ```
 
 # Test login with Google
-http://localhost:8080/auth/google
+## developer
+http://localhost:8081/auth/google
+## production
+### login google
 https://pycore.onrender.com/auth/google
+### login, register with email and password
+https://pycore.onrender.com/api/v1/register
+https://pycore.onrender.com/api/v1/login

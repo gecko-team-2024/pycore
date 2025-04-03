@@ -36,7 +36,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8081"
 	}
 	fmt.Println("Server is running on http://" + ip + ":" + port)
 	log.Fatal(http.ListenAndServe(":"+port, corsHandler))

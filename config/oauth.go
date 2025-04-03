@@ -21,7 +21,7 @@ func LoadEnv() {
 }
 
 func InitOAuth() {
-	redirectURL := "http://localhost:8080/auth/google/callback" // Mặc định cho môi trường phát triển
+	redirectURL := "http://localhost:8081/auth/google/callback" // Mặc định cho môi trường phát triển
 	if os.Getenv("ENV") == "production" {
 		redirectURL = "https://pycore.onrender.com/auth/google/callback" // URL cho môi trường production
 	}

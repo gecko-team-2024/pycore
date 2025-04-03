@@ -89,3 +89,17 @@ func LoginWithEmailAndPassword(email, password string) (string, error) {
 
 	return user.ID, nil
 }
+
+func GetUserByID(userId string) (*models.User, error) {
+	doc, err := config.Client.Collection("users").Doc(userId).Get(context.Background())
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+
+	var user models.User
+	if err := doc.DataTo(&user); err != nil {
+		return nil, errors.New("false to parse user data")
+	}
+
+	return &user, nil
+}

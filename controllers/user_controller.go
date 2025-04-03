@@ -55,8 +55,27 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"userID":  userID,
+		"user":    userID,
 		"message": "Login successfully",
 		"token":   token,
+	})
+}
+
+func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
+	userId := r.URL.Query().Get("id")
+	if userId == "" {
+		http.Error(w, "Misssing user ID", http.StatusBadRequest)
+		return
+	}
+
+	user, err := services.GetUserByID(userId)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user": user,
 	})
 }
