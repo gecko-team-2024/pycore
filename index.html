@@ -32,12 +32,12 @@
     <script>
         document.getElementById("downloadButton").addEventListener("click", function () {
             // URL của API tải file
-            const downloadUrl = "http://localhost:8081/api/v1/download";
+            const downloadUrl = "https://pycore.onrender.com/api/v1/download";
 
             // Tạo một thẻ <a> để tải file
             const a = document.createElement("a");
             a.href = downloadUrl;
-            a.download = ""; // Tên file sẽ được lấy từ header Content-Disposition
+            a.download = "";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

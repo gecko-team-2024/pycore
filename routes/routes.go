@@ -15,6 +15,8 @@ func UserHandleRoutes() *mux.Router {
 	router.HandleFunc("/auth/google", controllers.GoogleLoginHandler).Methods("GET")
 	router.HandleFunc("/auth/google/callback", controllers.GoogleCallbackHandler).Methods("GET")
 	router.HandleFunc("/api/v1/download", controllers.DownloadFileHandler).Methods("GET")
+	router.HandleFunc("/api/v1/upload-avatar", controllers.UpdatePhotoURLHandler).Methods("PUT")
+	router.HandleFunc("/api/v1/logs", controllers.GetLogsHandler).Methods("GET")
 
 	return router
 }

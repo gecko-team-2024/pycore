@@ -79,3 +79,26 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 		"user": user,
 	})
 }
+
+func UpdatePhotoURLHandler(w http.ResponseWriter, r *http.Request) {
+	var req models.User
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	userId := r.URL.Query().Get("id")
+	if userId == "" {
+		http.Error(w, "Missing user ID", http.StatusBadRequest)
+		return
+	}
+	if err := services.UpdatePhotoURL(userId, req.PhotoURL); err != nil {
+		http.Error(w, "Failed to update photo URL", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Photo URL updated successfully",
+	})
+}

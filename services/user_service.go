@@ -8,6 +8,7 @@ import (
 	"pycore/models"
 	"time"
 
+	"cloud.google.com/go/firestore"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -47,7 +48,6 @@ func RegisterWithEmailAndPassword(email, password, username string) (string, err
 		Password:  hashedPassword,
 		Email:     email,
 		CreatedAt: time.Now(),
-		PCoin:     0,
 		Role:      "user",
 		Method:    "email/password",
 		PhotoURL:  fmt.Sprintf("https://ui-avatars.com/api/?name=%s&background=random&color=fff", username),
@@ -104,4 +104,63 @@ func GetUserByID(userId string) (*models.User, error) {
 	}
 
 	return &user, nil
+}
+
+func UpdatePhotoURL(userId, newPhotoURL string) error {
+	ctx := context.Background()
+
+	if userId == "" || newPhotoURL == "" {
+		return errors.New("user ID and new photo URL are required")
+	}
+
+	_, err := config.Client.Collection("users").Doc(userId).Update(ctx, []firestore.Update{
+		{
+			Path:  "PhotoURL",
+			Value: newPhotoURL,
+		},
+	})
+
+	if err != nil {
+		return errors.New("failed to update photo URL")
+	}
+	return nil
+}
+
+func UpdatePassWord(userId, oldPassword, newPassword string) error {
+	ctx := context.Background()
+
+	if userId == "" || oldPassword == "" || newPassword == "" {
+		return errors.New("user ID, old password, and new password are required")
+	}
+
+	doc, err := config.Client.Collection("users").Doc(userId).Get(ctx)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	var user models.User
+	if err := doc.DataTo(&user); err != nil {
+		return errors.New("failed to parse user data")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
+		return errors.New("old password is incorrect")
+	}
+
+	hashedPassword, err := hashPassword(newPassword)
+	if err != nil {
+		return errors.New("failed to hash new password")
+	}
+
+	_, err = config.Client.Collection("users").Doc(userId).Update(ctx, []firestore.Update{
+		{
+			Path:  "password",
+			Value: hashedPassword,
+		},
+	})
+	if err != nil {
+		return errors.New("failed to update password")
+	}
+
+	return nil
 }
