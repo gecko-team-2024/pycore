@@ -80,25 +80,32 @@ func GetUserByIDHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func UpdatePhotoURLHandler(w http.ResponseWriter, r *http.Request) {
-	var req models.User
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
+func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	userId := r.URL.Query().Get("id")
 	if userId == "" {
 		http.Error(w, "Missing user ID", http.StatusBadRequest)
 		return
 	}
-	if err := services.UpdatePhotoURL(userId, req.PhotoURL); err != nil {
-		http.Error(w, "Failed to update photo URL", http.StatusInternalServerError)
+
+	var req struct {
+		OldPassword string `json:"old_password"`
+		NewPassword string `json:"new_password"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	err = services.UpdatePassword(userId, req.NewPassword, req.OldPassword)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"message": "Photo URL updated successfully",
+		"message": "Password updated successfully",
 	})
 }

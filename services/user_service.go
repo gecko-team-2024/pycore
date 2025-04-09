@@ -15,10 +15,16 @@ import (
 
 func hashPassword(password string) (string, error) {
 	hashes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	// Ensure this statement is inside a function body. For example:
 	if err != nil {
 		return "Error: ", err
 	}
 	return string(hashes), nil
+}
+
+func checkPasswordHash(password, hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
 }
 
 func RegisterWithEmailAndPassword(email, password, username string) (string, error) {
@@ -106,56 +112,39 @@ func GetUserByID(userId string) (*models.User, error) {
 	return &user, nil
 }
 
-func UpdatePhotoURL(userId, newPhotoURL string) error {
+func UpdatePassword(userId, newPassword, oldPassword string) error {
 	ctx := context.Background()
 
-	if userId == "" || newPhotoURL == "" {
-		return errors.New("user ID and new photo URL are required")
+	if newPassword == "" {
+		return errors.New("password cannot be blank")
 	}
 
-	_, err := config.Client.Collection("users").Doc(userId).Update(ctx, []firestore.Update{
-		{
-			Path:  "PhotoURL",
-			Value: newPhotoURL,
-		},
-	})
+	users := config.Client.Collection("users")
+	query := users.Where("ID", "==", userId).Documents(ctx)
 
-	if err != nil {
-		return errors.New("failed to update photo URL")
-	}
-	return nil
-}
-
-func UpdatePassWord(userId, oldPassword, newPassword string) error {
-	ctx := context.Background()
-
-	if userId == "" || oldPassword == "" || newPassword == "" {
-		return errors.New("user ID, old password, and new password are required")
-	}
-
-	doc, err := config.Client.Collection("users").Doc(userId).Get(ctx)
+	doc, err := query.Next()
 	if err != nil {
 		return errors.New("user not found")
 	}
 
 	var user models.User
-	if err := doc.DataTo(&user); err != nil {
-		return errors.New("failed to parse user data")
-	}
+	doc.DataTo(&user)
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
-		return errors.New("old password is incorrect")
+	if !checkPasswordHash(oldPassword, user.Password) {
+		return errors.New("incorrect old password")
 	}
 
 	hashedPassword, err := hashPassword(newPassword)
 	if err != nil {
-		return errors.New("failed to hash new password")
+		return errors.New("failed to hash password")
 	}
 
-	_, err = config.Client.Collection("users").Doc(userId).Update(ctx, []firestore.Update{
+	user.Password = hashedPassword
+
+	_, err = users.Doc(doc.Ref.ID).Update(ctx, []firestore.Update{
 		{
-			Path:  "password",
-			Value: hashedPassword,
+			Path:  "Password",
+			Value: user.Password,
 		},
 	})
 	if err != nil {

@@ -3,45 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test File Download</title>
+    <title>Real-Time Logs</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
             text-align: center;
-            margin-top: 50px;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
+            overflow-y: scroll;
+            height: 400px;
         }
     </style>
 </head>
 <body>
-    <h1>Test File Download</h1>
-    <p>Click the button below to download the file <strong>pỳarm.zip</strong>.</p>
-    <button id="downloadButton">Download</button>
+    <h1>Real-Time Server Logs</h1>
+    <pre id="logs"></pre>
 
     <script>
-        document.getElementById("downloadButton").addEventListener("click", function () {
-            // URL của API tải file
-            const downloadUrl = "https://pycore.onrender.com/api/v1/download";
+        const logsElement = document.getElementById("logs");
 
-            // Tạo một thẻ <a> để tải file
-            const a = document.createElement("a");
-            a.href = downloadUrl;
-            a.download = "";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        });
+        // Kết nối WebSocket
+        const socket = new WebSocket("ws://localhost:8081/ws/logs");
+
+        socket.onmessage = function(event) {
+            // Thêm log mới vào giao diện
+            logsElement.textContent += event.data;
+            logsElement.scrollTop = logsElement.scrollHeight; // Cuộn xuống cuối
+        };
+
+        socket.onerror = function(event) {
+            console.error("WebSocket error:", event);
+        };
+
+        socket.onclose = function() {
+            console.log("WebSocket connection closed");
+        };
     </script>
 </body>
 </html>

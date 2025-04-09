@@ -1,9 +1,12 @@
 package middleware
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -11,6 +14,10 @@ import (
 )
 
 var secret_key []byte
+
+type contextKey string
+
+const UserKey contextKey = "username"
 
 func init() {
 	// Load file .env
@@ -61,4 +68,50 @@ func VerifyToken(tokenString string) error {
 	}
 
 	return nil
+}
+
+func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
+			return
+		}
+
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			http.Error(w, "Invalid Authorization header format", http.StatusUnauthorized)
+			return
+		}
+
+		token, err := jwt.Parse(parts[1], func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return secret_key, nil
+		})
+
+		if err != nil || !token.Valid {
+			http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok || claims["username"] == nil {
+			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+			return
+		}
+
+		username := claims["username"].(string)
+		ctx := context.WithValue(r.Context(), UserKey, username)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}
+}
+
+func GetUsernameFromContext(r *http.Request) (string, error) {
+	username, ok := r.Context().Value(UserKey).(string)
+	if !ok {
+		return "", errors.New("username not found in context")
+	}
+	return username, nil
 }
